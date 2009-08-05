@@ -1,23 +1,20 @@
-/*
- * DiffMode.java
- *
- * Copyright (C) 1998-2006 Peter Graves
- * $Id: DiffMode.java,v 1.16 2006/04/12 00:16:53 piso Exp $
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+// DiffMode.java
+//
+// Copyright (C) 1998-2009 Peter Graves
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 package org.armedbear.j;
 
@@ -180,6 +177,7 @@ public final class DiffMode extends AbstractMode implements Constants, Mode
 
   public static void gotoFile()
   {
+    Log.debug("DiffMode.gotoFile");
     final Editor editor = Editor.currentEditor();
     if (editor.getDot() == null)
       return;
@@ -205,6 +203,9 @@ public final class DiffMode extends AbstractMode implements Constants, Mode
         break;
       case VC_DARCS:
         darcsGotoFile(editor, diffOutputBuffer);
+        break;
+      case VC_GIT:
+        gitGotoFile(editor, diffOutputBuffer);
         break;
       default:
         localGotoFile(editor, diffOutputBuffer);
@@ -415,8 +416,69 @@ public final class DiffMode extends AbstractMode implements Constants, Mode
           return dir;
         dir = dir.getParentFile();
       }
-    // Not found.
+    // not found
     return null;
+  }
+
+  private static void gitGotoFile(Editor editor, DiffOutputBuffer diffOutputBuffer)
+  {
+    Log.debug("gitGotoFile");
+    final Line dotLine = editor.getDotLine();
+    final int dotOffset = editor.getDotOffset();
+    final String text = dotLine.getText();
+    int lineNumber = 0;
+    int count = 0;
+    Line line = dotLine;
+    if (line.getText().startsWith("@@"))
+      {
+        lineNumber = parseLineNumber(line);
+      }
+    else
+      {
+        line = line.previous();
+        while (line != null && !line.getText().startsWith("@@"))
+          {
+            if (!line.getText().startsWith("-"))
+              ++count;
+            line = line.previous();
+          }
+        if (line == null)
+          return;
+        Debug.assertTrue(line.getText().startsWith("@@"));
+        lineNumber = parseLineNumber(line);
+      }
+    // our line numbers are zero-based
+    if (--lineNumber < 0)
+      return;
+    lineNumber += count;
+    Buffer parentBuffer = diffOutputBuffer.getParentBuffer();
+//     File dir;
+//     if (parentBuffer != null)
+//       dir = parentBuffer.getCurrentDirectory();
+//     else
+//       dir = diffOutputBuffer.getDirectory();
+//     line = line.previous();
+//     while (line != null && !line.getText().endsWith(" ===="))
+//       line = line.previous();
+//     if (line == null)
+//       return;
+//     int index = line.getText().lastIndexOf(" - ");
+//     if (index >= 0)
+//       {
+//         String filename = line.getText().substring(index + 3);
+//         if (filename.endsWith(" ===="))
+//           filename = filename.substring(0, filename.length() - 5);
+//         File file = File.getInstance(dir, filename);
+//         if (file != null && file.isFile())
+//           {
+//             Buffer buf = editor.getBuffer(file);
+//             if (buf != null)
+//               gotoLocation(editor, buf, lineNumber,
+//                            dotOffset > 0 ? dotOffset - 1 : 0);
+//           }
+//       }
+    gotoLocation(editor, parentBuffer, lineNumber,
+                 dotOffset > 0 ? dotOffset - 1 : 0);
   }
 
   private static void localGotoFile(Editor editor,
@@ -495,7 +557,7 @@ public final class DiffMode extends AbstractMode implements Constants, Mode
         oldLineNumber = parseLineNumber(line, '-');
         newLineNumber = parseLineNumber(line, '+');
       }
-    // Our line numbers are zero-based.
+    // our line numbers are zero-based
     --oldLineNumber;
     --newLineNumber;
     String filename = filename2;

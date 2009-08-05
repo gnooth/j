@@ -1,8 +1,7 @@
 /*
  * CommandTable.java
  *
- * Copyright (C) 1998-2005 Peter Graves
- * $Id: CommandTable.java,v 1.63 2005/11/16 19:50:11 piso Exp $
+ * Copyright (C) 1998-2009 Peter Graves
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,7 +47,7 @@ public class CommandTable
         if (map == null) {
             map = new HashMap(INITIAL_CAPACITY);
 
-            // Commands implemented in Editor.java.
+            // commands implemented in Editor.java
             addCommand("backspace");
             addCommand("bob");
             addCommand("bol");
@@ -211,7 +210,7 @@ public class CommandTable
             addCommand("wrapParagraphsInRegion");
             addCommand("wrapRegion");
 
-            // Commands implemented in other classes.
+            // commands implemented in other classes
             addCommand("about", "AboutDialog");
             addCommand("alias", "AliasDialog");
             addCommand("alignStrings",  "AlignStrings");
@@ -275,6 +274,7 @@ public class CommandTable
             addCommand("finish", "CheckinBuffer");
             addCommand("followContext", "FollowContextTask");
             addCommand("forwardSexp", "LispMode");
+            addCommand("git", "Git");
             addCommand("google", "WebMode");
             addCommand("gotoFile", "GotoFile");
             addCommand("help", "Help");
@@ -401,7 +401,7 @@ public class CommandTable
             addCommand("xmlParseBuffer", "XmlMode");
             addCommand("xmlValidateBuffer", "XmlMode");
 
-            // Mail commands.
+            // mail
             addCommand("attachFile", "mail.MailCommands");
             addCommand("bounce", "mail.MailCommands");
             addCommand("ccGroup", "mail.MailCommands");
@@ -454,14 +454,14 @@ public class CommandTable
             addCommand("sendMailTab", "mail.MailCommands");
             addCommand("toggleGroupByThread", "mail.MailCommands");
 
-            // News commands.
+            // news
             addCommand("news", "mail.NewsCommands");
             addCommand("openGroup", "mail.NewsCommands");
             addCommand("openGroupAtDot", "mail.NewsCommands");
             addCommand("readArticle", "mail.NewsCommands");
             addCommand("readArticleOtherWindow", "mail.NewsCommands");
 
-            // jdb commands.
+            // jdb
             addCommand("jdb", "jdb.JdbCommands");
             addCommand("jdbContinue", "jdb.JdbCommands");
             addCommand("jdbDeleteBreakpoint", "jdb.Jdb");
@@ -476,7 +476,7 @@ public class CommandTable
             addCommand("jdbSuspend", "jdb.JdbCommands");
             addCommand("jdbToggleBreakpoint", "jdb.Jdb");
 
-            // Web browser commands.
+            // web browser
             addCommand("webBack", "WebBuffer", "back");
             addCommand("webForward", "WebBuffer", "forward");
             addCommand("webReload", "WebBuffer", "refresh");
@@ -485,7 +485,7 @@ public class CommandTable
             addCommand("viewPage", "WebBuffer");
             addCommand("viewSource", "WebBuffer");
 
-            // Abbreviations.
+            // abbreviations
             addCommand("sr", "Registers", "saveToRegister");
             addCommand("ir", "Registers", "insertRegister");
             addCommand("lr", "Registers", "listRegisters");
