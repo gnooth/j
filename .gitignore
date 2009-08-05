@@ -6,6 +6,7 @@ abcl
 classes.stamp
 config.log
 config.status
+config.status.lineno
 j
 j.bat
 j.jar
@@ -20,4 +21,6 @@ src/org/armedbear/j/mail/Makefile
 src/org/armedbear/j/version
 src/org/armedbear/lisp/Makefile
 src/org/armedbear/lisp/build
+src/org/armedbear/lisp/libabcl.so
+src/org/armedbear/lisp/native.h
 src/org/armedbear/lisp/java/awt/Makefile
