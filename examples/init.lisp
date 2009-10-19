@@ -48,15 +48,9 @@
               ((member type '("lisp" "lsp" "cl" "java") :test 'string=)
                (let* ((namestring (namestring pathname))
                       (tagpath
-                       (cond ((sub-p namestring "/home/peter/cmucl/src/")
-                              "/home/peter/cmucl/src/code:/home/peter/cmucl/src/compiler:/home/peter/cmucl/src/pcl")
-                             ((sub-p namestring "/home/peter/cl-bench/")
-                              "/home/peter/cl-bench:/home/peter/cl-bench/files:/home/peter/depot/j/src/org/armedbear/lisp")
-                             ((sub-p namestring "/home/peter/gcl/ansi-tests/")
-                              "/home/peter/gcl/ansi-tests:/home/peter/depot/j/src/org/armedbear/lisp")
-                             ((sub-p namestring "/home/peter/phemlock")
-                              "/home/peter/phemlock/src/core:/home/peter/phemlock/src/user")
-                             ((sub-p namestring "/home/peter/sbcl")
+                       (cond ((sub-p namestring "/home/peter/xcl/")
+                              "/home/peter/xcl/lisp:/home/peter/xcl/compiler:/home/peter/xcl/compiler/x86-64")
+                             ((sub-p namestring "/home/peter/sbcl/")
                               "/home/peter/sbcl/src/code:/home/peter/sbcl/src/compiler")
                              (t ; default case: no change
                               nil))))
