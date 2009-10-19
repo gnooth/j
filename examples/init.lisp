@@ -48,8 +48,16 @@
               ((member type '("lisp" "lsp" "cl" "java") :test 'string=)
                (let* ((namestring (namestring pathname))
                       (tagpath
-                       (cond ((sub-p namestring "/home/peter/xcl/")
+                       (cond #+windows
+                             ((sub-p namestring "C:\\msys\\1.0\\home\\peter\\xcl\\")
+                              "C:\\msys\\1.0\\home\\peter\\xcl\\lisp;C:\\msys\\1.0\\home\\peter\\xcl\\compiler;C:\\msys\\1.0\\home\\peter\\xcl\\compiler\\x86-64")
+                             #-windows
+                             ((sub-p namestring "/home/peter/xcl/")
                               "/home/peter/xcl/lisp:/home/peter/xcl/compiler:/home/peter/xcl/compiler/x86-64")
+                             #+windows
+                             ((sub-p namestring "C:\\msys\\1.0\\home\\peter\\sbcl\\")
+                              "C:\\msys\\1.0\\home\\peter\\sbcl\\src\\code;C:\\msys\\1.0\\home\\peter\\sbcl\\src\\compiler")
+                             #-windows
                              ((sub-p namestring "/home/peter/sbcl/")
                               "/home/peter/sbcl/src/code:/home/peter/sbcl/src/compiler")
                              (t ; default case: no change
