@@ -1,7 +1,7 @@
 /*
  * LispShell.java
  *
- * Copyright (C) 2002-2009 Peter Graves
+ * Copyright (C) 2002-2010 Peter Graves
  * $Id: LispShell.java,v 1.101 2007/08/01 17:04:07 piso Exp $
  *
  * This program is free software; you can redistribute it and/or
@@ -179,7 +179,8 @@ public class LispShell extends Shell
         lisp.setPromptRE(ARMEDBEAR_PROMPT_PATTERN);
         lisp.setResetCommand("(ext:reset)");
       }
-    else if (shellCommand.indexOf("openmcl") >= 0)
+    else if (shellCommand.indexOf("openmcl") >= 0 ||
+             shellCommand.indexOf("lx86cl64") >= 0)
       {
         lisp.setPromptRE(OPENMCL_PROMPT_PATTERN);
         lisp.setResetCommand(":pop");
