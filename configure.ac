@@ -93,6 +93,9 @@ AC_MSG_CHECKING(Java version)
 JAVA_VERSION=`$JAVA -version 2>&1`
 
 case "$JAVA_VERSION" in
+    java*1.8*)
+        AC_MSG_RESULT($JAVA_VERSION)
+        ;;
     java*1.7*)
         AC_MSG_RESULT($JAVA_VERSION)
         ;;
