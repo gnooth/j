@@ -1,8 +1,7 @@
 /*
  * ModeList.java
  *
- * Copyright (C) 1998-2005 Peter Graves
- * $Id: ModeList.java,v 1.20 2005/02/17 01:26:48 piso Exp $
+ * Copyright (C) 1998-2015 Peter Graves <gnooth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.armedbear.j;
@@ -51,6 +49,7 @@ public final class ModeList implements Constants
         addEntry(C_MODE, C_MODE_NAME, "CMode", true, ".+\\.c");
         addEntry(DIFF_MODE, DIFF_MODE_NAME, "DiffMode", true, ".+\\.diff|.+\\.patch");
         addEntry(DIRECTORY_MODE, DIRECTORY_MODE_NAME, "DirectoryMode", false, null);
+        addEntry(FORTH_MODE, FORTH_MODE_NAME, "ForthMode", true, ".+\\.forth");
         addEntry(HTML_MODE, HTML_MODE_NAME, "HtmlMode", true, ".+\\.html?");
         addEntry(IMAGE_MODE, IMAGE_MODE_NAME, "ImageMode", false, ".+\\.gif|.+\\.jpe?g|.+\\.png");
         addEntry(JAVASCRIPT_MODE, JAVASCRIPT_MODE_NAME, "JavaScriptMode", true, ".+\\.js");
