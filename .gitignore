@@ -1,6 +1,7 @@
 *.class
 *.cls
 *.abcl
+*.cache
 Makefile
 abcl
 classes.stamp
@@ -8,6 +9,7 @@ config.log
 config.status
 config.status.lineno
 j
+!j/
 j.bat
 j.jar
 src/Makefile
