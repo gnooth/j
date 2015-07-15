@@ -19,17 +19,16 @@
 
 package org.armedbear.j;
 
-import gnu.regexp.RE;
-import gnu.regexp.REMatch;
-import gnu.regexp.UncheckedRE;
-
 public final class ForthFormatter extends Formatter
 {
-    private static final UncheckedRE labelRE = new UncheckedRE("^[_a-zA-z0-9]+:");
+    private static final int FORTH_STATE_NEUTRAL     = 0;
+    private static final int FORTH_STATE_COMMENT     = 1;
+    private static final int FORTH_STATE_AFTER_COLON = 2;
+    private static final int FORTH_STATE_NAME        = 3;
 
-    private static final int FORTH_FORMAT_TEXT    = 0;
-    private static final int FORTH_FORMAT_COMMENT = 1;
-//     private static final int FORTH_FORMAT_LABEL   = 2;
+    private static final int FORTH_FORMAT_TEXT       = 0;
+    private static final int FORTH_FORMAT_COMMENT    = 1;
+    private static final int FORTH_FORMAT_NAME       = 2;
 
     public ForthFormatter(Buffer buffer)
     {
@@ -40,25 +39,80 @@ public final class ForthFormatter extends Formatter
     {
         clearSegmentList();
         final String text = getDetabbedText(line);
-        if (text.length() > 0) {
+        final int limit = text.length();
+        int state = FORTH_STATE_NEUTRAL;
+        if (limit > 0) {
             int start = 0;
-//             int index = text.indexOf(':');
-//             if (index > 0) {
-//                 REMatch match = labelRE.getMatch(text);
-//                 if (match != null) {
-//                     index = match.getEndIndex();
-//                     addSegment(text, 0, index, FORTH_FORMAT_LABEL);
-//                     start = index;
-//                 }
-//             }
-            int index = text.indexOf('\\', start);
-            if (index >= 0) {
-                addSegment(text, start, index, FORTH_FORMAT_TEXT);
-                addSegment(text, index, FORTH_FORMAT_COMMENT);
-            } else
+            int i = 0;
+            while (i < limit) {
+                char c = text.charAt(i);
+                if (state == FORTH_STATE_COMMENT) {
+                    if (c == ')') {
+                        addSegment(text, start, i+1, FORTH_FORMAT_COMMENT);
+                        state = FORTH_STATE_NEUTRAL;
+                        start = i+1;
+                    }
+                    ++i;
+                    continue;
+                }
+                // Not in FORTH_STATE_COMMENT.
+                if (c == '(') {
+                    if (i < limit-1 && text.charAt(i+1) == ' ') {
+                        if (i > start)
+                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
+                        state = FORTH_STATE_COMMENT;
+                        start = i;
+                        ++i;
+                        if (i < limit)
+                            ++i;
+                    } else
+                        ++i;
+                    continue;
+                }
+                if (c == '\\') {
+                    if (i > start)
+                        addSegment(text, start, i, FORTH_FORMAT_TEXT);
+                    addSegment(text, i, FORTH_FORMAT_COMMENT);
+                    return segmentList;
+                }
+                if (c == ':') {
+                    if ((i == 0 || text.charAt(i-1) == ' ') &&
+                        (i == limit-1 || text.charAt(i+1) == ' ')) {
+                        if (i > start)
+                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
+                        state = FORTH_STATE_AFTER_COLON;
+                        start = i;
+                        ++i;
+                        continue;
+                    }
+                }
+                if (state == FORTH_STATE_AFTER_COLON) {
+                    if (c != ' ') {
+                        if (i > start)
+                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
+                        state = FORTH_STATE_NAME;
+                        start = i;
+                    }
+                    ++i;
+                    continue;
+                }
+                if (state == FORTH_STATE_NAME) {
+                    if (c == ' ') {
+                        if (i > start)
+                            addSegment(text, start, i, FORTH_FORMAT_NAME);
+                        state = FORTH_STATE_NEUTRAL;
+                        start = i;
+                    }
+                    ++i;
+                    continue;
+                }
+                ++i;
+            }
+            if (state == FORTH_STATE_COMMENT)
+                addSegment(text, start, FORTH_FORMAT_COMMENT);
+            else
                 addSegment(text, start, FORTH_FORMAT_TEXT);
-        } else
-            addSegment(text, FORTH_FORMAT_TEXT);
+        }
         return segmentList;
     }
 
@@ -68,7 +122,7 @@ public final class ForthFormatter extends Formatter
             formatTable = new FormatTable(null);
             formatTable.addEntryFromPrefs(FORTH_FORMAT_TEXT, "text");
             formatTable.addEntryFromPrefs(FORTH_FORMAT_COMMENT, "comment");
-//             formatTable.addEntryFromPrefs(FORTH_FORMAT_LABEL, "function");
+            formatTable.addEntryFromPrefs(FORTH_FORMAT_NAME, "function");
         }
         return formatTable;
     }
