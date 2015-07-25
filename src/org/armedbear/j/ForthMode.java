@@ -51,6 +51,16 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
         km.mapKey(KeyEvent.VK_ENTER, 0, "newlineAndIndent");
     }
 
+    public Tagger getTagger(SystemBuffer buffer)
+    {
+        return new ForthTagger(buffer);
+    }
+
+    public boolean isTaggable()
+    {
+        return true;
+    }
+
     public boolean canIndent()
     {
         return true;
