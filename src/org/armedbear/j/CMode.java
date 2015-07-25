@@ -1,8 +1,7 @@
 /*
  * CMode.java
  *
- * Copyright (C) 1998-2003 Peter Graves
- * $Id: CMode.java,v 1.3 2003/12/30 19:28:31 piso Exp $
+ * Copyright (C) 1998-2015 Peter Graves
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.armedbear.j;
@@ -61,12 +59,14 @@ public class CMode extends JavaMode implements Constants, Mode
 
     public String getCommentStart()
     {
-        return "/*";
+//         return "/*";
+        return "// ";
     }
 
     public String getCommentEnd()
     {
-        return "*/";
+//         return "*/";
+        return null;
     }
 
     public Formatter getFormatter(Buffer buffer)
