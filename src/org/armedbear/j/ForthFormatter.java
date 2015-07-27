@@ -57,15 +57,20 @@ public final class ForthFormatter extends Formatter
                 }
                 // Not in FORTH_STATE_COMMENT.
                 if (c == '(') {
-                    if (i < limit-1 && text.charAt(i+1) == ' ') {
-                        if (i > start)
-                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
-                        state = FORTH_STATE_COMMENT;
-                        start = i;
+                    if (i > 0 && text.charAt(i-1) > ' ') {
                         ++i;
-                        if (i < limit)
-                            ++i;
-                    } else
+                        continue;
+                    }
+                    if (i < limit-1 && text.charAt(i+1) > ' ') {
+                        ++i;
+                        continue;
+                    }
+                    if (i > start)
+                        addSegment(text, start, i, FORTH_FORMAT_TEXT);
+                    state = FORTH_STATE_COMMENT;
+                    start = i;
+                    ++i;
+                    if (i < limit)
                         ++i;
                     continue;
                 }
