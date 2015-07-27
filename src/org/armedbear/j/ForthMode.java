@@ -71,6 +71,16 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
         return false;
     }
 
+    public boolean isIdentifierStart(char c)
+    {
+        return !Character.isWhitespace(c);
+    }
+
+    public boolean isIdentifierPart(char c)
+    {
+        return !Character.isWhitespace(c);
+    }
+
     public int getCorrectIndentation(Line line, Buffer buffer)
     {
         final int indentSize = buffer.getIndentSize();
