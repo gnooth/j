@@ -49,6 +49,7 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
     protected void setKeyMapDefaults(KeyMap km)
     {
         km.mapKey(KeyEvent.VK_ENTER, 0, "newlineAndIndent");
+        km.mapKey(KeyEvent.VK_PERIOD, ALT_MASK, "findTagAtDot");
     }
 
     public Tagger getTagger(SystemBuffer buffer)
