@@ -48,7 +48,9 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
 
     protected void setKeyMapDefaults(KeyMap km)
     {
+        km.mapKey(KeyEvent.VK_TAB, 0, "tab");
         km.mapKey(KeyEvent.VK_ENTER, 0, "newlineAndIndent");
+        km.mapKey(KeyEvent.VK_T, CTRL_MASK, "findTag");
         km.mapKey(KeyEvent.VK_PERIOD, ALT_MASK, "findTagAtDot");
     }
 
