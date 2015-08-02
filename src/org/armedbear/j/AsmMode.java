@@ -1,8 +1,7 @@
 /*
  * AsmMode.java
  *
- * Copyright (C) 2003 Peter Graves
- * $Id: AsmMode.java,v 1.2 2003/12/31 19:40:51 piso Exp $
+ * Copyright (C) 2003-2015 Peter Graves
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.armedbear.j;
@@ -53,6 +51,18 @@ public final class AsmMode extends AbstractMode implements Constants, Mode
         km.mapKey(KeyEvent.VK_ENTER, 0, "newlineAndIndent");
         km.mapKey(KeyEvent.VK_F9, 0, "compile");
         km.mapKey(KeyEvent.VK_F9, CTRL_MASK, "recompile");
+        km.mapKey(KeyEvent.VK_T, CTRL_MASK, "findTag");
+        km.mapKey(KeyEvent.VK_PERIOD, ALT_MASK, "findTagAtDot");
+    }
+
+    public Tagger getTagger(SystemBuffer buffer)
+    {
+        return new AsmTagger(buffer);
+    }
+
+    public boolean isTaggable()
+    {
+        return true;
     }
 
     public boolean canIndent()
