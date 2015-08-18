@@ -91,11 +91,13 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
         final Line model = findModel(line);
         if (model == null)
             return 0;
-        final String modelTrim =
-            Utilities.detab(model.getText(), buffer.getTabWidth()).trim();
         final int modelIndent = buffer.getIndentation(model);
         final int indented = modelIndent + indentSize;
-        if (modelTrim.startsWith(": ") && !modelTrim.endsWith(" ;"))
+        final String modelTrim =
+            Utilities.detab(model.getText(), buffer.getTabWidth()).trim();
+        if (modelTrim.endsWith(" ;"))
+            return 0;
+        if (modelTrim.startsWith(": "))
             return indented;
         if (modelTrim.equalsIgnoreCase("begin") || modelTrim.endsWith(" begin"))
             return indented;
