@@ -35,17 +35,27 @@ public final class ForthTagger extends Tagger
     while (line != null)
       {
         String s = line.trim();
-        if (s != null && s.startsWith(": "))
+        String name = null;
+        if (s.startsWith(": "))
           {
             s = s.substring(2).trim();
             int index = s.indexOf(' ');
-            String name;
             if (index > 0)
               name = s.substring(0, index);
             else
               name = s;
-            tags.add(new LocalTag(name, line));
           }
+        if (s.regionMatches(true, 0, "code ", 0, 5))
+          {
+            s = s.substring(5).trim();
+            int index = s.indexOf(' ');
+            if (index > 0)
+              name = s.substring(0, index);
+            else
+              name = s;
+          }
+        if (name != null)
+          tags.add(new LocalTag(name, line));
         line = line.next();
       }
     buffer.setTags(tags);
