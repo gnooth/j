@@ -1,7 +1,7 @@
 /*
  * Frame.java
  *
- * Copyright (C) 1998-2005 Peter Graves
+ * Copyright (C) 1998-2015 Peter Graves
  * $Id: Frame.java,v 1.21 2006/10/19 17:00:21 piso Exp $
  *
  * This program is free software; you can redistribute it and/or
@@ -15,8 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.armedbear.j;
@@ -84,12 +83,12 @@ public final class Frame extends JFrame implements Constants, ComponentListener,
             sb.append(sessionName);
             sb.append(']');
         }
-        if (Editor.isDebugEnabled()) {
-            sb.append("     Java ");
-            sb.append(System.getProperty("java.version"));
-            sb.append(' ');
-            sb.append(System.getProperty("java.vendor"));
-        }
+//         if (Editor.isDebugEnabled()) {
+//             sb.append("     Java ");
+//             sb.append(System.getProperty("java.version"));
+//             sb.append(' ');
+//             sb.append(System.getProperty("java.vendor"));
+//         }
         setTitle(sb.toString());
     }
 
