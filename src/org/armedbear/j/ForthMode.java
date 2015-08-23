@@ -93,34 +93,44 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             return 0;
         final int modelIndent = buffer.getIndentation(model);
         final int indented = modelIndent + indentSize;
-        final String modelTrim =
-            Utilities.detab(model.getText(), buffer.getTabWidth()).trim();
+        String modelTrim =
+            Utilities.detab(model.getText(), buffer.getTabWidth()).trim().toLowerCase();
+        int index = modelTrim.indexOf(" \\ ");
+        if (index >= 0)
+            modelTrim = modelTrim.substring(0, index).trim();
         if (modelTrim.endsWith(" ;"))
             return 0;
         if (modelTrim.startsWith(": "))
             return indented;
-        if (modelTrim.equalsIgnoreCase("begin") || modelTrim.endsWith(" begin"))
+        if (modelTrim.equals("begin") || modelTrim.endsWith(" begin"))
             return indented;
-        if (modelTrim.equalsIgnoreCase("while") || modelTrim.endsWith(" while"))
+        if (modelTrim.equals("while") || modelTrim.endsWith(" while"))
             return indented;
-        if (modelTrim.equalsIgnoreCase("if") || modelTrim.endsWith(" if"))
+        if (modelTrim.equals("if") || modelTrim.endsWith(" if"))
             return indented;
-        if (modelTrim.equalsIgnoreCase("else") || modelTrim.endsWith(" else"))
+        if (modelTrim.equals("else") || modelTrim.endsWith(" else"))
             return indented;
-        if (modelTrim.equalsIgnoreCase("do") || modelTrim.endsWith(" do"))
+        if (modelTrim.equals("do") || modelTrim.endsWith(" do"))
             return indented;
-        if (modelTrim.equalsIgnoreCase("?do") || modelTrim.endsWith(" ?do"))
+        if (modelTrim.equals("?do") || modelTrim.endsWith(" ?do"))
             return indented;
-        final String trim =
-            Utilities.detab(line.getText(), buffer.getTabWidth()).trim();
+        String trim =
+            Utilities.detab(line.getText(), buffer.getTabWidth()).trim().toLowerCase();
+        index = trim.indexOf(" \\ ");
+        if (index >= 0)
+            trim = trim.substring(0, index).trim();
         final int outdented = modelIndent - indentSize;
-        if (trim.equalsIgnoreCase("while") || trim.equalsIgnoreCase("repeat"))
+        if (trim.equals("while") || trim.equals("repeat"))
             return outdented;
-        if (trim.equalsIgnoreCase("then") || trim.equalsIgnoreCase("else"))
+        if (trim.startsWith("while ") || trim.startsWith("repeat "))
+            return outdented;
+        if (trim.equals("until") || trim.startsWith("until "))
+            return outdented;
+        if (trim.equals("then") || trim.equals("else"))
             return outdented;
         if (trim.startsWith("then ") || trim.startsWith("else "))
             return outdented;
-        if (trim.equalsIgnoreCase("loop") || trim.equalsIgnoreCase("+loop"))
+        if (trim.equals("loop") || trim.equals("+loop"))
             return outdented;
         if (trim.startsWith("loop ") || trim.startsWith("+loop"))
             return outdented;
