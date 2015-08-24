@@ -44,27 +44,14 @@ public final class AsmTagger extends Tagger
             // Now we're looking at the first character of the tag.
             FastStringBuffer sb = new FastStringBuffer();
             char c = pos.getChar();
-            if (c == '"')
+            // Explicit tags are whitespace-delimited.
+            sb.append(c);
+            while (pos.next())
               {
-                while (pos.next())
-                  {
-                    c = pos.getChar();
-                    if (c == '"')
-                      break;
-                    sb.append(c);
-                  }
-              }
-            else
-              {
-                // Explicit tags are whitespace-delimited.
+                c = pos.getChar();
+                if (Character.isWhitespace(c))
+                  break;
                 sb.append(c);
-                while (pos.next())
-                  {
-                    c = pos.getChar();
-                    if (Character.isWhitespace(c))
-                      break;
-                    sb.append(c);
-                  }
               }
             final String tag = sb.toString();
             // Exact location of tag is beginning of text on line
