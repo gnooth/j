@@ -88,6 +88,15 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
     public int getCorrectIndentation(Line line, Buffer buffer)
     {
         final int indentSize = buffer.getIndentSize();
+        String trim =
+            Utilities.detab(line.getText(), buffer.getTabWidth()).trim().toLowerCase();
+        int index = trim.indexOf(" \\ ");
+        if (index >= 0)
+            trim = trim.substring(0, index).trim();
+        if (trim.startsWith(": ") || trim.startsWith(":noname "))
+            return 0;
+        if (trim.equals(";") || trim.startsWith("; "))
+            return 0;
         final Line model = findModel(line);
         if (model == null)
             return 0;
@@ -95,12 +104,12 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
         final int indented = modelIndent + indentSize;
         String modelTrim =
             Utilities.detab(model.getText(), buffer.getTabWidth()).trim().toLowerCase();
-        int index = modelTrim.indexOf(" \\ ");
+        index = modelTrim.indexOf(" \\ ");
         if (index >= 0)
             modelTrim = modelTrim.substring(0, index).trim();
         if (modelTrim.endsWith(" ;"))
             return 0;
-        if (modelTrim.startsWith(": "))
+        if (modelTrim.startsWith(": ") || modelTrim.startsWith(":noname"))
             return indented;
         if (modelTrim.equals("begin") || modelTrim.endsWith(" begin"))
             return indented;
@@ -114,17 +123,14 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             return indented;
         if (modelTrim.equals("?do") || modelTrim.endsWith(" ?do"))
             return indented;
-        String trim =
-            Utilities.detab(line.getText(), buffer.getTabWidth()).trim().toLowerCase();
-        index = trim.indexOf(" \\ ");
-        if (index >= 0)
-            trim = trim.substring(0, index).trim();
         final int outdented = modelIndent - indentSize;
         if (trim.equals("while") || trim.equals("repeat"))
             return outdented;
         if (trim.startsWith("while ") || trim.startsWith("repeat "))
             return outdented;
         if (trim.equals("until") || trim.startsWith("until "))
+            return outdented;
+        if (trim.equals("again") || trim.startsWith("again "))
             return outdented;
         if (trim.equals("then") || trim.equals("else"))
             return outdented;
@@ -134,10 +140,6 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             return outdented;
         if (trim.startsWith("loop ") || trim.startsWith("+loop"))
             return outdented;
-        if (trim.startsWith(": "))
-            return 0;
-        if (trim.equals(";") || trim.startsWith("; "))
-            return 0;
         return modelIndent;
     }
 
