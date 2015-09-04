@@ -34,7 +34,7 @@ public final class ForthTagger extends Tagger
     Line line = buffer.getFirstLine();
     while (line != null)
       {
-        String s = line.trim();
+        String s = Utilities.detab(line.getText(), 8).trim(); // tab width doesn't matter
         String name = null;
         if (s.startsWith(": "))
           {
