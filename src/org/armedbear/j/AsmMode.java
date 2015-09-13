@@ -75,6 +75,23 @@ public final class AsmMode extends AbstractMode implements Constants, Mode
         return false;
     }
 
+    private final boolean isIdentifierChar(char c)
+    {
+        if (Character.isWhitespace(c) || c == ',')
+            return false;
+        return true;
+    }
+
+    public boolean isIdentifierStart(char c)
+    {
+        return isIdentifierChar(c);
+    }
+
+    public boolean isIdentifierPart(char c)
+    {
+        return isIdentifierChar(c);
+    }
+
     public int getCorrectIndentation(Line line, Buffer buffer)
     {
         final int indentSize = buffer.getIndentSize();
