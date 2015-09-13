@@ -70,7 +70,8 @@ public final class AsmTagger extends Tagger
     Line line = buffer.getFirstLine();
     while (line != null)
       {
-        String s = line.trim();
+        String s =
+          Utilities.detab(line.getText(), 8).trim(); // tab width doesn't matter
         if (s != null)
           {
             if (s.startsWith(";"))
@@ -78,6 +79,18 @@ public final class AsmTagger extends Tagger
                 LocalTag tag = checkForExplicitTag(new Position(line, 0));
                 if (tag != null)
                   tags.add(tag);
+              }
+            else if (s.startsWith("%macro "))
+              {
+                String name = null;
+                s = s.substring(6).trim();
+                int index = s.indexOf(' ');
+                if (index > 0)
+                  name = s.substring(0, index);
+                else
+                  name = s;
+                if (name != null)
+                  tags.add(new LocalTag(name, line));
               }
             line = line.next();
           }
