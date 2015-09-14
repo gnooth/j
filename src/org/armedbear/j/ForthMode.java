@@ -123,6 +123,14 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             return indented;
         if (modelTrim.equals("?do") || modelTrim.endsWith(" ?do"))
             return indented;
+        if (modelTrim.equals("of") || modelTrim.endsWith(" of")) {
+            if (trim.equals("endof") || trim.startsWith(" endof"))
+                return modelIndent;
+            else
+                return indented;
+        }
+        if (modelTrim.equals("case") || modelTrim.endsWith(" case"))
+            return indented;
         final int outdented = modelIndent - indentSize;
         if (trim.equals("while") || trim.equals("repeat"))
             return outdented;
@@ -139,6 +147,10 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
         if (trim.equals("loop") || trim.equals("+loop"))
             return outdented;
         if (trim.startsWith("loop ") || trim.startsWith("+loop"))
+            return outdented;
+        if (trim.equals("endof") || trim.startsWith("endof "))
+            return outdented;
+        if (trim.equals("endcase") || trim.endsWith(" endcase"))
             return outdented;
         return modelIndent;
     }
