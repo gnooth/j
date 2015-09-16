@@ -49,7 +49,7 @@ public final class ModeList implements Constants
         addEntry(C_MODE, C_MODE_NAME, "CMode", true, ".+\\.c");
         addEntry(DIFF_MODE, DIFF_MODE_NAME, "DiffMode", true, ".+\\.diff|.+\\.patch");
         addEntry(DIRECTORY_MODE, DIRECTORY_MODE_NAME, "DirectoryMode", false, null);
-        addEntry(FORTH_MODE, FORTH_MODE_NAME, "ForthMode", true, ".+\\.forth|.+\\.fs|.+\\.f|.+\\.frt");
+        addEntry(FORTH_MODE, FORTH_MODE_NAME, "ForthMode", true, ".+\\.forth|.+\\.fs|.+\\.f|.+\\.frt|.+\\.fth");
         addEntry(HTML_MODE, HTML_MODE_NAME, "HtmlMode", true, ".+\\.html?");
         addEntry(IMAGE_MODE, IMAGE_MODE_NAME, "ImageMode", false, ".+\\.gif|.+\\.jpe?g|.+\\.png");
         addEntry(JAVASCRIPT_MODE, JAVASCRIPT_MODE_NAME, "JavaScriptMode", true, ".+\\.js");
