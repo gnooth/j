@@ -54,7 +54,7 @@ public final class AsmFormatter extends Formatter
                 }
             }
             index = text.indexOf(';', start);
-            if (index >= 0) {
+            if (index == 0 || (index > 0 && text.charAt(index - 1) == ' ')) {
                 addSegment(text, start, index, ASM_FORMAT_TEXT);
                 addSegment(text, index, ASM_FORMAT_COMMENT);
             } else
