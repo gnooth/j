@@ -123,6 +123,8 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             return indented;
         if (modelTrim.equals("?do") || modelTrim.endsWith(" ?do"))
             return indented;
+        if (modelTrim.equals("does>") || modelTrim.endsWith(" does>"))
+            return indented;
         if (modelTrim.equals("of") || modelTrim.endsWith(" of")) {
             if (trim.equals("endof") || trim.startsWith(" endof"))
                 return modelIndent;
