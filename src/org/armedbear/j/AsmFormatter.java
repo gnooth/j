@@ -21,14 +21,8 @@
 
 package org.armedbear.j;
 
-import gnu.regexp.RE;
-import gnu.regexp.REMatch;
-import gnu.regexp.UncheckedRE;
-
 public final class AsmFormatter extends Formatter
 {
-    private static final UncheckedRE labelRE = new UncheckedRE("^[_a-zA-z0-9]+:");
-
     private static final int ASM_FORMAT_TEXT    = 0;
     private static final int ASM_FORMAT_COMMENT = 1;
     private static final int ASM_FORMAT_LABEL   = 2;
@@ -44,19 +38,10 @@ public final class AsmFormatter extends Formatter
         final String text = getDetabbedText(line);
         if (text.length() > 0) {
             int start = 0;
-            int index = text.indexOf(':');
-            if (index > 0) {
-                REMatch match = labelRE.getMatch(text);
-                if (match != null) {
-                    index = match.getEndIndex();
-                    addSegment(text, 0, index, ASM_FORMAT_LABEL);
-                    start = index;
-                }
-            }
-            index = text.indexOf(';', start);
-            if (index == 0 || (index > 0 && text.charAt(index - 1) == ' ')) {
-                addSegment(text, start, index, ASM_FORMAT_TEXT);
-                addSegment(text, index, ASM_FORMAT_COMMENT);
+            int index_semi = text.indexOf(';');
+            if (index_semi == 0 || (index_semi > 0 && text.charAt(index_semi - 1) == ' ')) {
+                addSegment(text, start, index_semi, ASM_FORMAT_TEXT);
+                addSegment(text, index_semi, ASM_FORMAT_COMMENT);
             } else
                 addSegment(text, start, ASM_FORMAT_TEXT);
         } else
