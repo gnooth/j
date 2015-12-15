@@ -115,8 +115,14 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             return indented;
         if (modelTrim.equals("while") || modelTrim.endsWith(" while"))
             return indented;
-        if (modelTrim.equals("if") || modelTrim.endsWith(" if"))
+        if (modelTrim.equals("if") || modelTrim.endsWith(" if")) {
+            if (trim.equals("then") || trim.equals("else"))
+                return modelIndent;
+            if (trim.startsWith("then ") || trim.startsWith("else "))
+                return modelIndent;
+            // otherwise...
             return indented;
+        }
         if (modelTrim.equals("else") || modelTrim.endsWith(" else"))
             return indented;
         if (modelTrim.equals("do") || modelTrim.endsWith(" do"))
