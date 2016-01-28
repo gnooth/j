@@ -1,7 +1,7 @@
 /*
  * ForthFormatter.java
  *
- * Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+ * Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,6 +46,26 @@ public final class ForthFormatter extends Formatter
             int i = 0;
             while (i < limit) {
                 char c = text.charAt(i);
+                if (state == FORTH_STATE_AFTER_COLON) {
+                    if (c != ' ') {
+                        if (i > start)
+                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
+                        state = FORTH_STATE_NAME;
+                        start = i;
+                    }
+                    ++i;
+                    continue;
+                }
+                if (state == FORTH_STATE_NAME) {
+                    if (c == ' ') {
+                        if (i > start)
+                            addSegment(text, start, i, FORTH_FORMAT_NAME);
+                        state = FORTH_STATE_NEUTRAL;
+                        start = i;
+                    }
+                    ++i;
+                    continue;
+                }
                 if (state == FORTH_STATE_COMMENT) {
                     if (c == ')') {
                         addSegment(text, start, i+1, FORTH_FORMAT_COMMENT);
@@ -95,32 +115,8 @@ public final class ForthFormatter extends Formatter
                         continue;
                     }
                 }
-                if (state == FORTH_STATE_AFTER_COLON) {
-                    if (c != ' ') {
-                        if (i > start)
-                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
-                        state = FORTH_STATE_NAME;
-                        start = i;
-                    }
-                    ++i;
-                    continue;
-                }
-                if (state == FORTH_STATE_NAME) {
-                    if (c == ' ') {
-                        if (i > start)
-                            addSegment(text, start, i, FORTH_FORMAT_NAME);
-                        state = FORTH_STATE_NEUTRAL;
-                        start = i;
-                    }
-                    ++i;
-                    continue;
-                }
                 ++i;
             }
-//             if (state == FORTH_STATE_COMMENT)
-//                 addSegment(text, start, FORTH_FORMAT_COMMENT);
-//             else
-//                 addSegment(text, start, FORTH_FORMAT_TEXT);
             int format = FORTH_FORMAT_TEXT;
             if (state == FORTH_STATE_COMMENT)
                 format = FORTH_FORMAT_COMMENT;
