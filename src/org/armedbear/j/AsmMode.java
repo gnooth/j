@@ -75,21 +75,34 @@ public final class AsmMode extends AbstractMode implements Constants, Mode
         return false;
     }
 
-    private final boolean isIdentifierChar(char c)
-    {
-        if (Character.isWhitespace(c) || c == ',')
-            return false;
-        return true;
-    }
-
     public boolean isIdentifierStart(char c)
     {
-        return isIdentifierChar(c);
+        if (c >= 'a' && c <= 'z')
+            return true;
+        if (c >='A' && c <= 'Z')
+            return true;
+        if (c == '_')
+            return true;
+        // NASM
+        if (c == '?')
+            return true;
+        return false;
     }
 
     public boolean isIdentifierPart(char c)
     {
-        return isIdentifierChar(c);
+        if (c >= 'a' && c <= 'z')
+            return true;
+        if (c >='A' && c <= 'Z')
+            return true;
+        if (c >= '0' && c <= '9')
+            return true;
+        if (c == '_')
+            return true;
+        // NASM
+        if (c == '@' || c == '?')
+            return true;
+        return false;
     }
 
     public int getCorrectIndentation(Line line, Buffer buffer)
