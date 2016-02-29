@@ -1,7 +1,7 @@
 /*
  * ForthMode.java
  *
- * Copyright (C) 2015 Peter Graves <gnooth@gmail.com>
+ * Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -93,7 +93,7 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
         int index = trim.indexOf(" \\ ");
         if (index >= 0)
             trim = trim.substring(0, index).trim();
-        if (trim.startsWith(": ") || trim.startsWith(":noname "))
+        if (trim.startsWith(": ") || trim.startsWith(":noname ") || trim.startsWith("test: "))
             return 0;
         if (trim.equals(";") || trim.startsWith("; "))
             return 0;
@@ -109,7 +109,7 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             modelTrim = modelTrim.substring(0, index).trim();
         if (modelTrim.endsWith(" ;"))
             return 0;
-        if (modelTrim.startsWith(": ") || modelTrim.startsWith(":noname"))
+        if (modelTrim.startsWith(": ") || modelTrim.startsWith(":noname") || modelTrim.startsWith("test: "))
             return indented;
         if (modelTrim.equals("begin") || modelTrim.endsWith(" begin"))
             return indented;
