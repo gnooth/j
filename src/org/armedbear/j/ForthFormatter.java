@@ -81,7 +81,7 @@ public final class ForthFormatter extends Formatter
                         ++i;
                         continue;
                     }
-                    if (i < limit-1 && text.charAt(i+1) > ' ') {
+                    if (i >= limit-1 || text.charAt(i+1) > ' ') {
                         ++i;
                         continue;
                     }
