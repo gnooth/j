@@ -104,6 +104,14 @@ public final class ForthFormatter extends Formatter
                         }
                     }
                 }
+                if (c == '/') {
+                    if (i < limit - 1 && text.charAt(i+1) == '/') {
+                        if (i > start)
+                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
+                        addSegment(text, i, FORTH_FORMAT_COMMENT);
+                        return segmentList;
+                    }
+                }
                 if (c == ':') {
                     if ((i == 0 || text.charAt(i-1) == ' ') &&
                         (i == limit-1 || text.charAt(i+1) == ' ')) {
