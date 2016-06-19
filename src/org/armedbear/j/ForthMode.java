@@ -90,6 +90,7 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
         final int indentSize = buffer.getIndentSize();
         String trim =
             Utilities.detab(line.getText(), buffer.getTabWidth()).trim().toLowerCase();
+        // Remove end-of-line comment.
         int index = trim.indexOf(" \\ ");
         if (index >= 0)
             trim = trim.substring(0, index).trim();
@@ -111,6 +112,11 @@ public final class ForthMode extends AbstractMode implements Constants, Mode
             return 0;
         if (modelTrim.startsWith(": ") || modelTrim.startsWith(":noname") || modelTrim.startsWith("test: "))
             return indented;
+        if (modelTrim.equals("[") || modelTrim.endsWith(" [")) {
+            if (trim.equals("]") || trim.startsWith("]"))
+                return modelIndent;
+            return indented;
+        }
         if (modelTrim.equals("begin") || modelTrim.endsWith(" begin"))
             return indented;
         if (modelTrim.equals("while") || modelTrim.endsWith(" while"))
