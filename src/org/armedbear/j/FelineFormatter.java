@@ -1,7 +1,7 @@
 /*
- * ForthFormatter.java
+ * FelineFormatter.java
  *
- * Copyright (C) 2015-2016 Peter Graves <gnooth@gmail.com>
+ * Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,18 +19,19 @@
 
 package org.armedbear.j;
 
-public final class ForthFormatter extends Formatter
+public final class FelineFormatter extends Formatter
 {
-    private static final int FORTH_STATE_NEUTRAL     = 0;
-    private static final int FORTH_STATE_COMMENT     = 1;
-    private static final int FORTH_STATE_AFTER_COLON = 2;
-    private static final int FORTH_STATE_NAME        = 3;
+    private static final int FELINE_STATE_NEUTRAL     = 0;
+    private static final int FELINE_STATE_COMMENT     = 1;
+    private static final int FELINE_STATE_AFTER_COLON = 2;
+    private static final int FELINE_STATE_NAME        = 3;
 
-    private static final int FORTH_FORMAT_TEXT       = 0;
-    private static final int FORTH_FORMAT_COMMENT    = 1;
-    private static final int FORTH_FORMAT_NAME       = 2;
+    private static final int FELINE_FORMAT_TEXT       = 0;
+    private static final int FELINE_FORMAT_COMMENT    = 1;
+    private static final int FELINE_FORMAT_NAME       = 2;
+    private static final int FELINE_FORMAT_BRACE      = 3;
 
-    public ForthFormatter(Buffer buffer)
+    public FelineFormatter(Buffer buffer)
     {
         this.buffer = buffer;
     }
@@ -40,42 +41,42 @@ public final class ForthFormatter extends Formatter
         clearSegmentList();
         final String text = getDetabbedText(line);
         final int limit = text.length();
-        int state = FORTH_STATE_NEUTRAL;
+        int state = FELINE_STATE_NEUTRAL;
         if (limit > 0) {
             int start = 0;
             int i = 0;
             while (i < limit) {
                 char c = text.charAt(i);
-                if (state == FORTH_STATE_AFTER_COLON) {
+                if (state == FELINE_STATE_AFTER_COLON) {
                     if (c != ' ') {
                         if (i > start)
-                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
-                        state = FORTH_STATE_NAME;
+                            addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                        state = FELINE_STATE_NAME;
                         start = i;
                     }
                     ++i;
                     continue;
                 }
-                if (state == FORTH_STATE_NAME) {
+                if (state == FELINE_STATE_NAME) {
                     if (c == ' ') {
                         if (i > start)
-                            addSegment(text, start, i, FORTH_FORMAT_NAME);
-                        state = FORTH_STATE_NEUTRAL;
+                            addSegment(text, start, i, FELINE_FORMAT_NAME);
+                        state = FELINE_STATE_NEUTRAL;
                         start = i;
                     }
                     ++i;
                     continue;
                 }
-                if (state == FORTH_STATE_COMMENT) {
+                if (state == FELINE_STATE_COMMENT) {
                     if (c == ')') {
-                        addSegment(text, start, i+1, FORTH_FORMAT_COMMENT);
-                        state = FORTH_STATE_NEUTRAL;
+                        addSegment(text, start, i+1, FELINE_FORMAT_COMMENT);
+                        state = FELINE_STATE_NEUTRAL;
                         start = i+1;
                     }
                     ++i;
                     continue;
                 }
-                // Not in FORTH_STATE_COMMENT.
+                // Not in FELINE_STATE_COMMENT.
                 if (c == '(') {
                     if (i > 0 && text.charAt(i-1) > ' ') {
                         ++i;
@@ -86,50 +87,57 @@ public final class ForthFormatter extends Formatter
                         continue;
                     }
                     if (i > start)
-                        addSegment(text, start, i, FORTH_FORMAT_TEXT);
-                    state = FORTH_STATE_COMMENT;
+                        addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                    state = FELINE_STATE_COMMENT;
                     start = i;
                     ++i;
                     if (i < limit)
                         ++i;
                     continue;
                 }
-                if (c == '\\') {
+                if (c == '!') {
                     if (i == 0 || text.charAt(i-1) == ' ') {
                         if (i < limit - 1 && text.charAt(i+1) == ' ') {
                             if (i > start)
-                                addSegment(text, start, i, FORTH_FORMAT_TEXT);
-                            addSegment(text, i, FORTH_FORMAT_COMMENT);
+                                addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                            addSegment(text, i, FELINE_FORMAT_COMMENT);
                             return segmentList;
                         }
                     }
                 }
-//                 if (c == '/') {
-//                     if (i < limit - 1 && text.charAt(i+1) == '/') {
-//                         if (i > start)
-//                             addSegment(text, start, i, FORTH_FORMAT_TEXT);
-//                         addSegment(text, i, FORTH_FORMAT_COMMENT);
-//                         return segmentList;
-//                     }
-//                 }
+                if (c == '/') {
+                    if (i < limit - 1 && text.charAt(i+1) == '/') {
+                        if (i > start)
+                            addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                        addSegment(text, i, FELINE_FORMAT_COMMENT);
+                        return segmentList;
+                    }
+                }
                 if (c == ':') {
                     if ((i == 0 || text.charAt(i-1) == ' ') &&
                         (i == limit-1 || text.charAt(i+1) == ' ')) {
                         if (i > start)
-                            addSegment(text, start, i, FORTH_FORMAT_TEXT);
-                        state = FORTH_STATE_AFTER_COLON;
+                            addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                        state = FELINE_STATE_AFTER_COLON;
                         start = i;
                         ++i;
                         continue;
                     }
                 }
+//                 if (c == '[' || c == ']') {
+//                     addSegment(text, start, i, FELINE_FORMAT_TEXT);
+//                     addSegment(text, i, i+1, FELINE_FORMAT_BRACE);
+//                     start = i+1;
+//                     ++i;
+//                     continue;
+//                 }
                 ++i;
             }
-            int format = FORTH_FORMAT_TEXT;
-            if (state == FORTH_STATE_COMMENT)
-                format = FORTH_FORMAT_COMMENT;
-            else if (state == FORTH_STATE_NAME)
-                format = FORTH_FORMAT_NAME;
+            int format = FELINE_FORMAT_TEXT;
+            if (state == FELINE_STATE_COMMENT)
+                format = FELINE_FORMAT_COMMENT;
+            else if (state == FELINE_STATE_NAME)
+                format = FELINE_FORMAT_NAME;
             addSegment(text, start, format);
         }
         return segmentList;
@@ -139,9 +147,10 @@ public final class ForthFormatter extends Formatter
     {
         if (formatTable == null) {
             formatTable = new FormatTable(null);
-            formatTable.addEntryFromPrefs(FORTH_FORMAT_TEXT, "text");
-            formatTable.addEntryFromPrefs(FORTH_FORMAT_COMMENT, "comment");
-            formatTable.addEntryFromPrefs(FORTH_FORMAT_NAME, "function");
+            formatTable.addEntryFromPrefs(FELINE_FORMAT_TEXT, "text");
+            formatTable.addEntryFromPrefs(FELINE_FORMAT_COMMENT, "comment");
+            formatTable.addEntryFromPrefs(FELINE_FORMAT_BRACE, "brace");
+            formatTable.addEntryFromPrefs(FELINE_FORMAT_NAME, "function");
         }
         return formatTable;
     }
