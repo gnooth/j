@@ -113,17 +113,42 @@ public final class FelineFormatter extends Formatter
                         return segmentList;
                     }
                 }
-                if (c == ':') {
+                if (c == '-')
+                  {
+                    if (i < limit - 1 && text.charAt(i+1) == '-')
+                      {
+                        if (i > start)
+                          addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                        addSegment(text, i, FELINE_FORMAT_COMMENT);
+                        return segmentList;
+                      }
+                  }
+                if (c == ':')
+                  {
                     if ((i == 0 || text.charAt(i-1) == ' ') &&
-                        (i == limit-1 || text.charAt(i+1) == ' ')) {
+                        (i == limit-1 || text.charAt(i+1) == ' '))
+                      {
                         if (i > start)
                             addSegment(text, start, i, FELINE_FORMAT_TEXT);
                         state = FELINE_STATE_AFTER_COLON;
                         start = i;
                         ++i;
                         continue;
-                    }
-                }
+                      }
+                    if (i >= 4)
+                      {
+                        Position pos = new Position(line, i - 4);
+                        if (pos.lookingAt("test: "))
+                          {
+                            if (i > start)
+                              addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                            state = FELINE_STATE_AFTER_COLON;
+                            start = i;
+                            ++i;
+                            continue;
+                          }
+                      }
+                  }
 //                 if (c == '[' || c == ']') {
 //                     addSegment(text, start, i, FELINE_FORMAT_TEXT);
 //                     addSegment(text, i, i+1, FELINE_FORMAT_BRACE);
