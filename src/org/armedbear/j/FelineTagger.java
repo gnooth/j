@@ -45,9 +45,9 @@ public final class FelineTagger extends Tagger
             else
               name = s;
           }
-        if (s.regionMatches(true, 0, "code ", 0, 5))
+        if (s.regionMatches(true, 0, "test: ", 0, 5))
           {
-            s = s.substring(5).trim();
+            s = s.substring(6).trim();
             int index = s.indexOf(' ');
             if (index > 0)
               name = s.substring(0, index);
