@@ -44,6 +44,8 @@ public final class FelineFormatter extends Formatter
 
   private static final boolean isDefiner(String s)
   {
+    if (s.equals(":"))
+      return true;
     if (s.length() > 4 && s.endsWith(":")) {
       if (s.equals("test:"))
         return true;
@@ -215,24 +217,6 @@ public final class FelineFormatter extends Formatter
                       ++i;
                     continue;
                   }
-                if (c == ':')
-                  {
-                    if ((i == 0 || text.charAt(i-1) == ' ')
-                        && (i == limit-1 || text.charAt(i+1) == ' '))
-                      {
-                        if (i > start)
-                          addSegment(text, start, i, FELINE_FORMAT_TEXT);
-                        state = FELINE_STATE_AFTER_COLON;
-                        start = i;
-                        ++i;
-                        continue;
-                      }
-                    else
-                      {
-                        ++i;
-                        continue;
-                      }
-                  }
                 if (c != ' ')
                   {
                     if (i > start)
@@ -255,6 +239,12 @@ public final class FelineFormatter extends Formatter
           format = FELINE_FORMAT_NAME;
         else if (state == FELINE_STATE_QUOTE)
           format = FELINE_FORMAT_STRING;
+        else if (state == FELINE_STATE_WORD)
+          {
+            String word = text.substring(start);
+            if (isKeyword(word))
+              format = FELINE_FORMAT_KEYWORD;
+          }
         addSegment(text, start, format);
       }
     return segmentList;
@@ -275,39 +265,45 @@ public final class FelineFormatter extends Formatter
         final String text = line.getText();
         final int limit = line.length();
         int i = 0;
-        while (i < limit) {
-          char c = text.charAt(i);
-          if (state == FELINE_STATE_BLOCK_COMMENT)
-            {
-              if (c == '-' && text.regionMatches(i, "-}", 0, 2))
-                {
+        while (i < limit)
+          {
+            char c = text.charAt(i);
+            if (state == FELINE_STATE_BLOCK_COMMENT)
+              {
+                if (c == '-' && text.regionMatches(i, "-}", 0, 2))
+                  {
+                    state = FELINE_STATE_NEUTRAL;
+                    i += 2;
+                  } else
+                    ++i;
+                continue;
+              }
+            if (state == FELINE_STATE_QUOTE)
+              {
+                if (c == '"')
                   state = FELINE_STATE_NEUTRAL;
-                  i += 2;
-                } else
-                  ++i;
-              continue;
-            }
-          if (state == FELINE_STATE_QUOTE)
-            {
-              if (c == '"')
-                state = FELINE_STATE_NEUTRAL;
-              ++i;
-              continue;
-            }
-          if (c == '{' && text.regionMatches(i, "{-", 0, 2))
-            {
-              state = FELINE_STATE_BLOCK_COMMENT;
-              i += 2;
-              continue;
-            }
-          if (c == '"')
-            {
-              state = FELINE_STATE_QUOTE;
-              ++i;
-              continue;
-            }
-          ++i;
-        }
+                ++i;
+                continue;
+              }
+            if (state == FELINE_STATE_NEUTRAL)
+              {
+                if (c == '{' && text.regionMatches(i, "{-", 0, 2))
+                  {
+                    state = FELINE_STATE_BLOCK_COMMENT;
+                    i += 2;
+                    continue;
+                  }
+                if (c == '-' && text.regionMatches(i, "--", 0, 2))
+                  break;
+                if (c == '"')
+                  {
+                    state = FELINE_STATE_QUOTE;
+                    ++i;
+                    continue;
+                  }
+              }
+            ++i;
+          }
         line = line.next();
       }
     buffer.setNeedsParsing(false);
