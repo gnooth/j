@@ -27,15 +27,36 @@ public final class FelineFormatter extends Formatter
   private static final int FELINE_STATE_PAREN_COMMENT   = 3;
   private static final int FELINE_STATE_AFTER_COLON     = 4;
   private static final int FELINE_STATE_NAME            = 5;
+  private static final int FELINE_STATE_QUOTE           = 6;
+  private static final int FELINE_STATE_WORD            = 7;
 
   private static final int FELINE_FORMAT_TEXT           = 0;
   private static final int FELINE_FORMAT_COMMENT        = 1;
   private static final int FELINE_FORMAT_NAME           = 2;
   private static final int FELINE_FORMAT_BRACE          = 3;
+  private static final int FELINE_FORMAT_STRING         = 4;
+  private static final int FELINE_FORMAT_KEYWORD        = 5;
 
   public FelineFormatter(Buffer buffer)
   {
     this.buffer = buffer;
+  }
+
+  private static final boolean isDefiner(String s)
+  {
+    if (s.length() > 4 && s.endsWith(":")) {
+      if (s.equals("test:"))
+        return true;
+      if (s.equals("help:"))
+        return true;
+      if (s.equals("global:"))
+        return true;
+      if (s.equals("local:"))
+        return true;
+      if (s.equals("constant:"))
+        return true;
+    }
+    return false;
   }
 
   public LineSegmentList formatLine(Line line)
@@ -51,6 +72,17 @@ public final class FelineFormatter extends Formatter
         while (i < limit)
           {
             char c = text.charAt(i);
+            if (state == FELINE_STATE_QUOTE)
+              {
+                if (c == '"')
+                  {
+                    addSegment(text, start, i+1, FELINE_FORMAT_STRING);
+                    state = FELINE_STATE_NEUTRAL;
+                    start = i + 1;
+                  }
+                ++i;
+                continue;
+              }
             if (state == FELINE_STATE_AFTER_COLON)
               {
                 if (c != ' ')
@@ -81,7 +113,7 @@ public final class FelineFormatter extends Formatter
                   {
                     addSegment(text, start, i+1, FELINE_FORMAT_COMMENT);
                     state = FELINE_STATE_NEUTRAL;
-                    start = i+1;
+                    start = i + 1;
                   }
                 ++i;
                 continue;
@@ -104,68 +136,89 @@ public final class FelineFormatter extends Formatter
                     continue;
                   }
               }
-            // not in FELINE_STATE_PAREN_COMMENT or FELINE_STATE_BLOCK_COMMENT
-            if (c == '(')
+            if (state == FELINE_STATE_WORD && c == ' ')
               {
-                if (i > 0 && text.charAt(i-1) > ' ')
-                  {
-                    ++i;
-                    continue;
-                  }
-                if (i >= limit-1 || text.charAt(i+1) > ' ')
-                  {
-                    ++i;
-                    continue;
-                  }
                 if (i > start)
-                  addSegment(text, start, i, FELINE_FORMAT_TEXT);
-                state = FELINE_STATE_PAREN_COMMENT;
-                start = i;
-                ++i;
-                if (i < limit)
-                  ++i;
-                continue;
-              }
-            if (c == '-')
-              {
-                if (i < limit - 1 && text.charAt(i+1) == '-')
                   {
-                    if (i > start)
+                    String word = text.substring(start, i);
+                    if (isDefiner(word))
+                      {
+                        addSegment(text, start, i, FELINE_FORMAT_KEYWORD);
+                        state = FELINE_STATE_AFTER_COLON;
+                        start = i;
+                        ++i;
+                        continue;
+                      }
+                    else if (isKeyword(word))
+                      addSegment(text, start, i, FELINE_FORMAT_KEYWORD);
+                    else
                       addSegment(text, start, i, FELINE_FORMAT_TEXT);
-                    addSegment(text, i, FELINE_FORMAT_COMMENT);
-                    return segmentList;
-                  }
-              }
-            if (c == '{')
-              {
-                if (i < limit - 1 && text.charAt(i+1) == '-')
-                  {
-                    if (i > start)
-                      addSegment(text, start, i, FELINE_FORMAT_TEXT);
-                    state = FELINE_STATE_BLOCK_COMMENT;
+                    state = FELINE_STATE_NEUTRAL;
                     start = i;
-                    i += 2;
                   }
-                else
-                  ++i;
+                ++i;
                 continue;
               }
-            if (c == ':')
+            if (state == FELINE_STATE_NEUTRAL)
               {
-                if ((i == 0 || text.charAt(i-1) == ' ')
-                    && (i == limit-1 || text.charAt(i+1) == ' '))
+                if (c == '"')
                   {
                     if (i > start)
                       addSegment(text, start, i, FELINE_FORMAT_TEXT);
-                    state = FELINE_STATE_AFTER_COLON;
+                    state = FELINE_STATE_QUOTE;
                     start = i;
                     ++i;
                     continue;
                   }
-                if (i >= 4)
+                if (c == '(')
                   {
-                    Position pos = new Position(line, i - 4);
-                    if (pos.lookingAt("test: "))
+                    if (i > 0 && text.charAt(i-1) > ' ')
+                      {
+                        ++i;
+                        continue;
+                      }
+                    if (i >= limit-1 || text.charAt(i+1) > ' ')
+                      {
+                        ++i;
+                        continue;
+                      }
+                    if (i > start)
+                      addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                    state = FELINE_STATE_PAREN_COMMENT;
+                    start = i;
+                    ++i;
+                    if (i < limit)
+                      ++i;
+                    continue;
+                  }
+                if (c == '-')
+                  {
+                    if (i < limit - 1 && text.charAt(i+1) == '-')
+                      {
+                        if (i > start)
+                          addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                        addSegment(text, i, FELINE_FORMAT_COMMENT);
+                        return segmentList;
+                      }
+                  }
+                if (c == '{')
+                  {
+                    if (i < limit - 1 && text.charAt(i+1) == '-')
+                      {
+                        if (i > start)
+                          addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                        state = FELINE_STATE_BLOCK_COMMENT;
+                        start = i;
+                        i += 2;
+                      }
+                    else
+                      ++i;
+                    continue;
+                  }
+                if (c == ':')
+                  {
+                    if ((i == 0 || text.charAt(i-1) == ' ')
+                        && (i == limit-1 || text.charAt(i+1) == ' '))
                       {
                         if (i > start)
                           addSegment(text, start, i, FELINE_FORMAT_TEXT);
@@ -174,9 +227,24 @@ public final class FelineFormatter extends Formatter
                         ++i;
                         continue;
                       }
+                    else
+                      {
+                        ++i;
+                        continue;
+                      }
                   }
+                if (c != ' ')
+                  {
+                    if (i > start)
+                      addSegment(text, start, i, FELINE_FORMAT_TEXT);
+                    state = FELINE_STATE_WORD;
+                    start = i;
+                    ++i;
+                    continue;
+                  }
+
               }
-                ++i;
+            ++i;
           }
         int format = FELINE_FORMAT_TEXT;
         if (state == FELINE_STATE_LINE_COMMENT
@@ -185,6 +253,8 @@ public final class FelineFormatter extends Formatter
           format = FELINE_FORMAT_COMMENT;
         else if (state == FELINE_STATE_NAME)
           format = FELINE_FORMAT_NAME;
+        else if (state == FELINE_STATE_QUOTE)
+          format = FELINE_FORMAT_STRING;
         addSegment(text, start, format);
       }
     return segmentList;
@@ -217,11 +287,23 @@ public final class FelineFormatter extends Formatter
                   ++i;
               continue;
             }
-          // not in block comment
+          if (state == FELINE_STATE_QUOTE)
+            {
+              if (c == '"')
+                state = FELINE_STATE_NEUTRAL;
+              ++i;
+              continue;
+            }
           if (c == '{' && text.regionMatches(i, "{-", 0, 2))
             {
               state = FELINE_STATE_BLOCK_COMMENT;
               i += 2;
+              continue;
+            }
+          if (c == '"')
+            {
+              state = FELINE_STATE_QUOTE;
+              ++i;
               continue;
             }
           ++i;
@@ -241,6 +323,8 @@ public final class FelineFormatter extends Formatter
         formatTable.addEntryFromPrefs(FELINE_FORMAT_COMMENT, "comment");
         formatTable.addEntryFromPrefs(FELINE_FORMAT_BRACE, "brace");
         formatTable.addEntryFromPrefs(FELINE_FORMAT_NAME, "function");
+        formatTable.addEntryFromPrefs(FELINE_FORMAT_STRING, "string");
+        formatTable.addEntryFromPrefs(FELINE_FORMAT_KEYWORD, "keyword");
       }
     return formatTable;
   }
