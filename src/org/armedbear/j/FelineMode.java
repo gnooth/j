@@ -28,6 +28,7 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
   private FelineMode()
   {
     super(FELINE_MODE, FELINE_MODE_NAME);
+    keywords = new Keywords(this);
     setProperty(Property.INDENT_SIZE, 4);
   }
 
@@ -110,7 +111,9 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
       modelTrim = modelTrim.substring(0, index).trim();
     if (modelTrim.endsWith(" ;"))
       return 0;
-    if (modelTrim.startsWith(": ") || modelTrim.startsWith("test: "))
+    if (modelTrim.startsWith(": ")
+        || modelTrim.startsWith("test: ")
+        || modelTrim.startsWith("help: "))
       return indented;
     if (trim.startsWith("-}"))
       return modelIndent >= 2 ? modelIndent - 2 : 0;
