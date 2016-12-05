@@ -19,16 +19,16 @@
 
 package org.armedbear.j;
 
-public final class FelineFormatter extends Formatter
+public final class FelineFormatter extends Formatter implements Constants
 {
-  private static final int FELINE_STATE_NEUTRAL         = 0;
-  private static final int FELINE_STATE_LINE_COMMENT    = 1;
-  private static final int FELINE_STATE_BLOCK_COMMENT   = 2;
-  private static final int FELINE_STATE_PAREN_COMMENT   = 3;
-  private static final int FELINE_STATE_AFTER_COLON     = 4;
-  private static final int FELINE_STATE_NAME            = 5;
-  private static final int FELINE_STATE_QUOTE           = 6;
-  private static final int FELINE_STATE_WORD            = 7;
+  private static final int FELINE_STATE_NEUTRAL         = STATE_NEUTRAL;
+  private static final int FELINE_STATE_LINE_COMMENT    = STATE_LAST + 1;
+  private static final int FELINE_STATE_BLOCK_COMMENT   = STATE_COMMENT;
+  private static final int FELINE_STATE_PAREN_COMMENT   = STATE_LAST + 3;
+  private static final int FELINE_STATE_AFTER_COLON     = STATE_LAST + 4;
+  private static final int FELINE_STATE_NAME            = STATE_LAST + 5;
+  private static final int FELINE_STATE_QUOTE           = STATE_QUOTE;
+  private static final int FELINE_STATE_WORD            = STATE_LAST + 7;
 
   private static final int FELINE_FORMAT_TEXT           = 0;
   private static final int FELINE_FORMAT_COMMENT        = 1;
@@ -52,8 +52,6 @@ public final class FelineFormatter extends Formatter
       if (s.equals("help:"))
         return true;
       if (s.equals("global:"))
-        return true;
-      if (s.equals("local:"))
         return true;
       if (s.equals("constant:"))
         return true;

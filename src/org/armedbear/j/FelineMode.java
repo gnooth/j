@@ -88,6 +88,9 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
 
   public int getCorrectIndentation(Line line, Buffer buffer)
   {
+    if (buffer.needsParsing())
+      buffer.getFormatter().parseBuffer();
+
     final int indentSize = buffer.getIndentSize();
     String trim =
       Utilities.detab(line.getText(), buffer.getTabWidth()).trim().toLowerCase();
@@ -95,17 +98,31 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
     int index = trim.indexOf(" -- ");
     if (index >= 0)
       trim = trim.substring(0, index).trim();
-    if (trim.startsWith(": ") || trim.startsWith("test: "))
+    if (trim.startsWith(": ") || trim.startsWith("test: ")
+        || trim.startsWith("help: "))
       return 0;
     if (trim.equals(";") || trim.startsWith("; "))
       return 0;
     final Line model = findModel(line);
     if (model == null)
       return 0;
+
     final int modelIndent = buffer.getIndentation(model);
     final int indented = modelIndent + indentSize;
     String modelTrim =
       Utilities.detab(model.getText(), buffer.getTabWidth()).trim().toLowerCase();
+
+    if (trim.startsWith("-}"))
+      return modelIndent >= 2 ? modelIndent - 2 : 0;
+    if (modelTrim.endsWith("{-"))
+      return modelIndent + 2;
+
+    SyntaxIterator it = getSyntaxIterator(new Position(model, 0));
+    char[] chars = it.hideSyntacticWhitespace(model);
+    String s = new String(chars);
+
+    modelTrim =
+      Utilities.detab(s, buffer.getTabWidth()).trim().toLowerCase();
     index = modelTrim.indexOf(" -- ");
     if (index >= 0)
       modelTrim = modelTrim.substring(0, index).trim();
@@ -115,10 +132,6 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
         || modelTrim.startsWith("test: ")
         || modelTrim.startsWith("help: "))
       return indented;
-    if (trim.startsWith("-}"))
-      return modelIndent >= 2 ? modelIndent - 2 : 0;
-    if (modelTrim.endsWith("{-"))
-      return modelIndent + 2;
     if (modelTrim.equals("[") || modelTrim.endsWith(" ["))
       {
         if (trim.equals("]") || trim.startsWith("]"))
@@ -126,6 +139,11 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
         return indented;
       }
     return modelIndent;
+  }
+
+  public SyntaxIterator getSyntaxIterator(Position pos)
+  {
+    return new FelineSyntaxIterator(pos);
   }
 
   private Line findModel(Line line)
