@@ -1,7 +1,7 @@
 /*
  * FelineMode.java
  *
- * Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+ * Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -98,11 +98,11 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
     int index = trim.indexOf(" -- ");
     if (index >= 0)
       trim = trim.substring(0, index).trim();
-    if (trim.startsWith(": ") || trim.startsWith("test: ")
-        || trim.startsWith("help: "))
+    if (trim.startsWith(": ") || trim.startsWith("test: ") || trim.startsWith("help: "))
       return 0;
     if (trim.equals(";") || trim.startsWith("; "))
       return 0;
+
     final Line model = findModel(line);
     if (model == null)
       return 0;
@@ -116,6 +116,16 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
       return modelIndent >= 2 ? modelIndent - 2 : 0;
     if (modelTrim.endsWith("{-"))
       return modelIndent + 2;
+
+    if (trim.equals("]") || trim.startsWith("] "))
+      {
+        if (modelTrim.equals("[") || modelTrim.endsWith(" ["))
+          return modelIndent;
+        else
+          return modelIndent - indentSize;
+      }
+    if (trim.equals("}") || trim.startsWith("} "))
+      return modelIndent - indentSize;
 
     SyntaxIterator it = getSyntaxIterator(new Position(model, 0));
     char[] chars = it.hideSyntacticWhitespace(model);
@@ -135,6 +145,12 @@ public final class FelineMode extends AbstractMode implements Constants, Mode
     if (modelTrim.equals("[") || modelTrim.endsWith(" ["))
       {
         if (trim.equals("]") || trim.startsWith("]"))
+          return modelIndent;
+        return indented;
+      }
+    if (modelTrim.equals("{") || modelTrim.endsWith(" {"))
+      {
+        if (trim.equals("}") || trim.startsWith("}"))
           return modelIndent;
         return indented;
       }
