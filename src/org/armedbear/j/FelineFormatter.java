@@ -1,7 +1,7 @@
 /*
  * FelineFormatter.java
  *
- * Copyright (C) 2016 Peter Graves <gnooth@gmail.com>
+ * Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,9 +51,9 @@ public final class FelineFormatter extends Formatter implements Constants
         return true;
       if (s.equals("help:"))
         return true;
-      if (s.equals("global:"))
+      if (s.equals("global:") || s.equals(">global:"))
         return true;
-      if (s.equals("constant:"))
+      if (s.equals("constant:") || s.equals(">constant:"))
         return true;
     }
     return false;
