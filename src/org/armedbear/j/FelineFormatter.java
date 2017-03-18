@@ -55,6 +55,8 @@ public final class FelineFormatter extends Formatter implements Constants
         return true;
       if (s.equals("constant:") || s.equals(">constant:"))
         return true;
+      if (s.equals("tuple:"))
+        return true;
     }
     return false;
   }
