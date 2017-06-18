@@ -1171,19 +1171,19 @@ public final class Utilities implements Constants
     public static String getUserHome()
     {
         if (userHome == null) {
-            if (Platform.isPlatformWindows()) {
-                String[] cmdarray = {"bash", "-c", "echo $HOME"};
-                String output = exec(cmdarray);
-                if (output != null) {
-                    output = output.trim();
-                    if (output.length() > 0) {
-                        if (output.indexOf('/') >= 0)
-                            userHome = uncygnify(output);
-                        else
-                            userHome = output;
-                    }
-                }
-            }
+//             if (Platform.isPlatformWindows()) {
+//                 String[] cmdarray = {"bash", "-c", "echo $HOME"};
+//                 String output = exec(cmdarray);
+//                 if (output != null) {
+//                     output = output.trim();
+//                     if (output.length() > 0) {
+//                         if (output.indexOf('/') >= 0)
+//                             userHome = uncygnify(output);
+//                         else
+//                             userHome = output;
+//                     }
+//                 }
+//             }
             if (userHome == null) {
                 userHome = System.getProperty("user.home");
                 // Expand links.
