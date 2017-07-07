@@ -36,6 +36,10 @@ public final class FelineFormatter extends Formatter implements Constants
   private static final int FELINE_FORMAT_BRACE          = 3;
   private static final int FELINE_FORMAT_STRING         = 4;
   private static final int FELINE_FORMAT_KEYWORD        = 5;
+  private static final int FELINE_FORMAT_PREPROCESSOR   = 6;
+
+  private static final String[] preprocessorWords =
+    {"#if", "#ifdef", "#ifndef", "#else", "#endif"};
 
   public FelineFormatter(Buffer buffer)
   {
@@ -151,6 +155,8 @@ public final class FelineFormatter extends Formatter implements Constants
                         ++i;
                         continue;
                       }
+                    else if (Utilities.isOneOf(word, preprocessorWords))
+                      addSegment(text, start, i, FELINE_FORMAT_PREPROCESSOR);
                     else if (isKeyword(word))
                       addSegment(text, start, i, FELINE_FORMAT_KEYWORD);
                     else
@@ -242,7 +248,9 @@ public final class FelineFormatter extends Formatter implements Constants
         else if (state == FELINE_STATE_WORD)
           {
             String word = text.substring(start);
-            if (isKeyword(word))
+            if (Utilities.isOneOf(word, preprocessorWords))
+              format = FELINE_FORMAT_PREPROCESSOR;
+            else if (isKeyword(word))
               format = FELINE_FORMAT_KEYWORD;
           }
         addSegment(text, start, format);
@@ -321,6 +329,7 @@ public final class FelineFormatter extends Formatter implements Constants
         formatTable.addEntryFromPrefs(FELINE_FORMAT_NAME, "function");
         formatTable.addEntryFromPrefs(FELINE_FORMAT_STRING, "string");
         formatTable.addEntryFromPrefs(FELINE_FORMAT_KEYWORD, "keyword");
+        formatTable.addEntryFromPrefs(FELINE_FORMAT_PREPROCESSOR, "preprocessor");
       }
     return formatTable;
   }
