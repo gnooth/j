@@ -10,4 +10,7 @@ global:
 tuple:
 public
 private
+public:
+private:
 use:
+unuse:
