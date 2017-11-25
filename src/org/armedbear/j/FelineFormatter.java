@@ -55,6 +55,8 @@ public final class FelineFormatter extends Formatter implements Constants
         return true;
       if (s.equals("help:"))
         return true;
+      if (s.equals("syntax:" ))
+        return true;
       if (s.equals("global:") || s.equals(">global:"))
         return true;
       if (s.equals("constant:") || s.equals(">constant:"))
