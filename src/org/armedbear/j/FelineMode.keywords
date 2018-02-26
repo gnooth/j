@@ -16,3 +16,5 @@ symbol:
 special:
 use:
 unuse:
+method:
+thread-local:
